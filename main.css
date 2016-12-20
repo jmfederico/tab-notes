@@ -1,0 +1,25 @@
+html,
+body,
+.CodeMirror-wrap {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.CodeMirror-scroll {
+    min-height: 100%;
+}
+
+html {
+    font-family: sans-serif;
+}
+
+pre.task {
+    color: red;
+}
+
+pre.task.task-completed {
+    color: green;
+    text-decoration: line-through;
+}

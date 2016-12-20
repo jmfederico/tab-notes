@@ -1,0 +1,55 @@
+<!doctype html>
+<html manifest="notes.appcache">
+<link rel="stylesheet" href="simplemde.min.css">
+<link rel="stylesheet" href="main.css">
+
+<body><textarea></textarea></body>
+
+<script src="jquery-3.1.1.slim.min.js"></script>
+<script src="simplemde.min.js"></script>
+
+<script>
+  var initialValue = null
+  if (localStorage.getItem("simplemde")) {
+    initialValue = localStorage.getItem("simplemde")
+  }
+  var simplemde = new SimpleMDE({
+    'autofocus': false,
+    'status': false,
+    'toolbar': false,
+    'spellChecker': false,
+    'initialValue': initialValue
+  });
+  simplemde.codemirror.on("changes", function () {
+    localStorage.setItem("simplemde", simplemde.value());
+  });
+  simplemde.codemirror.on("renderLine", function (cm, line, element) {
+    var styles = line.styles.toString()
+    if (styles.search('formatting-task') >= 0) {
+      $(element).addClass('task')
+      if (styles.search('property') >= 0) {
+        $(element).addClass('task-completed')
+      }
+    }
+  });
+  simplemde.codemirror.on("mousedown", function (cm, event) {
+    if ($(event.target).siblings('.cm-formatting-task').length > 0 || $(event.target).hasClass('cm-formatting-task')) {
+      var element = $(event.target).parent().children('.cm-formatting-task')[0]
+      var line = cm.getLineHandle($(element).parents('.CodeMirror-line').index())
+      if (element.className.search('cm-property') >= 0) {
+        line.text = line.text.replace('[x]', '[ ]')
+      }
+      else {
+        line.text = line.text.replace('[ ]', '[x]')
+      }
+      var lineNo = line.lineNo()
+      var position = line.text.length
+      cm.setValue(cm.getValue())
+      cm.focus()
+      cm.setCursor(lineNo, position)
+      event.preventDefault()
+    }
+  });
+</script>
+
+</html>
