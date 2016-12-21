@@ -38,7 +38,7 @@
     var localContent = localStorage.getItem('content')
     var localChanged = localStorage.getItem('changed')
 
-    if (localContent && localChanged) {
+    if (localContent !== null && localChanged !== null) {
       initialValue = localContent
       changed = localChanged
     }
