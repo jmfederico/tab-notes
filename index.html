@@ -1,83 +1,35 @@
 <!doctype html>
-<html manifest="cache.appcache">
+<!--<html manifest="cache.appcache">-->
+<html>
 <link rel="stylesheet" href="https://cdn.rawgit.com/necolas/normalize.css/f06565fe8e0e1ad1b88f2732719e28ed97bde40f/normalize.css">
 <link rel="stylesheet" href="https://cdn.rawgit.com/NextStepWebs/simplemde-markdown-editor/6abda7ab68cc20f4aca870eb243747951b90ab04/dist/simplemde.min.css">
 <link rel="stylesheet" href="main.css">
 
-<body><textarea></textarea></body>
+<body>
+  <!--Container for SimpleMDE-->
+  <textarea></textarea>
 
-<script src="http://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
+  <!--FireBase Auth-->
+  <div id="firebase-auth-wrapper">
+
+    <input type="text" id="email" name="email" placeholder="Email"/>
+<input type="password" id="password" name="password" placeholder="Password"/>
+<br/><br/>
+<button disabled id="quickstart-sign-in" name="signin">Sign In</button>
+<button id="quickstart-sign-up" name="signup">Sign Up</button>
+<button disabled id="quickstart-verify-email" name="verify-email">Send Email Verification</button>
+<button id="quickstart-password-reset" name="verify-email">Send Password Reset Email</button>
+
+</div>
+</body>
+
+<script src="https://www.gstatic.com/firebasejs/3.6.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.6.4/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-database.js"></script>
+
+<script src="http://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc="
+  crossorigin="anonymous"></script>
 <script src="https://cdn.rawgit.com/NextStepWebs/simplemde-markdown-editor/6abda7ab68cc20f4aca870eb243747951b90ab04/dist/simplemde.min.js"></script>
-
-<script>
-  var initialValue = `# Welcome to Tab-Notes
-
-Trained to understand Markdown, Tab-Notes will keep your:
-
-- thoughts
-- to-dos
-- memos
-
-__Always ready for you!__
-
-
-Based on http://simplemde.com/, with my personal set of improvements, it will help you be more organized.
-
-- [x] Read introduction
-- [ ] Click on a to-do to mark is as done
-- [ ] Be more productive
-  `
-  var changed = + new Date()
-  var simplemde = new SimpleMDE({
-    'initialValue': localStorage.getItem('content') || initialValue,
-    'placeholder': "Seems like there is nothing noted!",
-    'shortcuts': {
-      'drawImage': null,
-      'drawLink': null,
-      'togglePreview': 'Cmd-Alt-P'
-    },
-    'status': false,
-    'spellChecker': false,
-    'toolbar': false
-  });
-  simplemde.codemirror.on('changes', function () {
-    localStorage.setItem('content', simplemde.value());
-    changed = + new Date()
-    localStorage.setItem('changed', changed);
-  });
-  simplemde.codemirror.on('renderLine', function (cm, line, element) {
-    var styles = line.styles.toString()
-    if (styles.search('formatting-task') >= 0) {
-      $(element).addClass('task')
-      if (styles.search('property') >= 0) {
-        $(element).addClass('task-completed')
-      }
-    }
-  });
-  simplemde.codemirror.on('focus', function (cm, event) {
-    if (localStorage.getItem('changed') >= changed) {
-      cm.setValue(localStorage.getItem('content'))
-      changed = localStorage.getItem('changed')
-    }
-  })
-  simplemde.codemirror.on('mousedown', function (cm, event) {
-    if ($(event.target).siblings('.cm-formatting-task').length > 0 || $(event.target).hasClass('cm-formatting-task')) {
-      event.preventDefault()
-      var element = $(event.target).parent().children('.cm-formatting-task')[0]
-      var line = cm.getLineHandle($(element).parents('.CodeMirror-line').index())
-      if (element.className.search('cm-property') >= 0) {
-        line.text = line.text.replace('[x]', '[ ]')
-      }
-      else {
-        line.text = line.text.replace('[ ]', '[x]')
-      }
-      var lineNo = line.lineNo()
-      var position = line.text.length
-      cm.setValue(cm.getValue())
-      cm.focus()
-      cm.setCursor(lineNo, position)
-    }
-  });
-</script>
+<script src="main.js"></script>
 
 </html>
