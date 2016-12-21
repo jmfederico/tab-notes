@@ -14,26 +14,39 @@
   firebase.initializeApp(config)
   var database = firebase.database()
 
-  var initialValue = `# Welcome to Tab-Notes
+  var changed = -1
+  var syncSource = null
 
-Trained to understand Markdown, Tab-Notes will keep your:
+  function getInitialValue () {
+    var initialValue = `# Welcome to Tab-Notes
 
-- thoughts
-- to-dos
-- memos
+  Trained to understand Markdown, Tab-Notes will keep your:
 
-__Always ready for you!__
+  - thoughts
+  - to-dos
+  - memos
 
-Based on http://simplemde.com/, with my personal set of improvements, it will help you be more organized.
+  __Always ready for you!__
 
-- [x] Read introduction
-- [ ] Click on a to-do to mark is as done
-- [ ] Be more productive
-  `
+  Based on http://simplemde.com/, with my personal set of improvements, it will help you be more organized.
 
-  var changed = +new Date()
+  - [x] Read introduction
+  - [ ] Click on a to-do to mark is as done
+  - [ ] Be more productive
+    `
+
+    var localContent = localStorage.getItem('content')
+    var localChanged = localStorage.getItem('changed')
+
+    if (localContent && localChanged) {
+      initialValue = localContent
+      changed = localChanged
+    }
+    return initialValue
+  }
+
   var simplemde = new window.SimpleMDE({
-    'initialValue': localStorage.getItem('content') || initialValue,
+    'initialValue': getInitialValue(),
     'placeholder': 'Seems like there is nothing noted!',
     'shortcuts': {
       'drawImage': null,
@@ -48,8 +61,12 @@ Based on http://simplemde.com/, with my personal set of improvements, it will he
   simplemde.codemirror.on('changes', function () {
     var content = simplemde.value()
     var user = firebase.auth().currentUser
-    changed = +new Date()
-    if (user) {
+
+    if (!syncSource) {
+      changed = +new Date()
+    }
+
+    if (syncSource !== 'firebase' && user) {
       clearTimeout(saveToFirebaseTimerId)
       saveToFirebaseTimerId = setTimeout(function () {
         database.ref('users/' + user.uid + '/note').set({
@@ -60,6 +77,7 @@ Based on http://simplemde.com/, with my personal set of improvements, it will he
     }
     localStorage.setItem('content', content)
     localStorage.setItem('changed', changed)
+    syncSource = null
   })
   simplemde.codemirror.on('renderLine', function (cm, line, element) {
     var styles = line.styles.toString()
@@ -76,11 +94,15 @@ Based on http://simplemde.com/, with my personal set of improvements, it will he
       database.ref('users/' + user.uid + '/note').once('value').then(function (snapshot) {
         var values = snapshot.val()
         if (parseInt(values.changed, 10) > parseInt(changed, 10)) {
+          syncSource = 'firebase'
+          changed = values.changed
           cm.setValue(values.content)
         }
       })
     }
     if (parseInt(localStorage.getItem('changed'), 10) > parseInt(changed, 10)) {
+      syncSource = 'localStorage'
+      changed = localStorage.getItem('changed')
       cm.setValue(localStorage.getItem('content'))
     }
   })
