@@ -56,7 +56,7 @@ Based on http://simplemde.com/, with my personal set of improvements, it will he
           'content': content,
           'changed': changed
         })
-      }, 5000)
+      }, 2000)
     }
     localStorage.setItem('content', content)
     localStorage.setItem('changed', changed)
@@ -75,15 +75,13 @@ Based on http://simplemde.com/, with my personal set of improvements, it will he
     if (user) {
       database.ref('users/' + user.uid + '/note').once('value').then(function (snapshot) {
         var values = snapshot.val()
-        if (values.changed > changed) {
+        if (parseInt(values.changed, 10) > parseInt(changed, 10)) {
           cm.setValue(values.content)
-          changed = values.changed
         }
       })
     }
-    if (localStorage.getItem('changed') >= changed) {
+    if (parseInt(localStorage.getItem('changed'), 10) > parseInt(changed, 10)) {
       cm.setValue(localStorage.getItem('content'))
-      changed = localStorage.getItem('changed')
     }
   })
   simplemde.codemirror.on('mousedown', function (cm, event) {
