@@ -1,12 +1,13 @@
 <!doctype html>
 <html manifest="cache.appcache">
-<link rel="stylesheet" href="simplemde.min.css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/necolas/normalize.css/f06565fe8e0e1ad1b88f2732719e28ed97bde40f/normalize.css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/NextStepWebs/simplemde-markdown-editor/6abda7ab68cc20f4aca870eb243747951b90ab04/dist/simplemde.min.css">
 <link rel="stylesheet" href="main.css">
 
 <body><textarea></textarea></body>
 
-<script src="jquery-3.1.1.slim.min.js"></script>
-<script src="simplemde.min.js"></script>
+<script src="http://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
+<script src="https://cdn.rawgit.com/NextStepWebs/simplemde-markdown-editor/6abda7ab68cc20f4aca870eb243747951b90ab04/dist/simplemde.min.js"></script>
 
 <script>
   var initialValue = `# Welcome to Tab-Notes
@@ -61,6 +62,7 @@ Based on http://simplemde.com/, with my personal set of improvements, it will he
   })
   simplemde.codemirror.on('mousedown', function (cm, event) {
     if ($(event.target).siblings('.cm-formatting-task').length > 0 || $(event.target).hasClass('cm-formatting-task')) {
+      event.preventDefault()
       var element = $(event.target).parent().children('.cm-formatting-task')[0]
       var line = cm.getLineHandle($(element).parents('.CodeMirror-line').index())
       if (element.className.search('cm-property') >= 0) {
@@ -74,7 +76,6 @@ Based on http://simplemde.com/, with my personal set of improvements, it will he
       cm.setValue(cm.getValue())
       cm.focus()
       cm.setCursor(lineNo, position)
-      event.preventDefault()
     }
   });
 </script>
