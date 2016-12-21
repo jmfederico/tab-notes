@@ -54,7 +54,6 @@ Based on http://simplemde.com/, with my personal set of improvements, it will he
     }
   });
   simplemde.codemirror.on('focus', function (cm, event) {
-    console.log('blu')
     if (localStorage.getItem('changed') >= changed) {
       cm.setValue(localStorage.getItem('content'))
       changed = localStorage.getItem('changed')
