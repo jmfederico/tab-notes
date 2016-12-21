@@ -1,5 +1,5 @@
 <!doctype html>
-<html manifest="notes.appcache">
+<html manifest="cache.appcache">
 <link rel="stylesheet" href="simplemde.min.css">
 <link rel="stylesheet" href="main.css">
 
@@ -9,21 +9,42 @@
 <script src="simplemde.min.js"></script>
 
 <script>
-  var initialValue = null
-  if (localStorage.getItem("simplemde")) {
-    initialValue = localStorage.getItem("simplemde")
-  }
+  var initialValue = `# Welcome to Tab-Notes
+
+Trained to understand Markdown, Tab-Notes will keep your:
+
+- thoughts
+- to-dos
+- memos
+
+__Always ready for you!__
+
+
+Based on http://simplemde.com/, with my personal set of improvements, it will help you be more organized.
+
+- [x] Read introduction
+- [ ] Click on a to-do to mark is as done
+- [ ] Be more productive
+  `
+  var changed = + new Date()
   var simplemde = new SimpleMDE({
-    'autofocus': false,
+    'initialValue': localStorage.getItem('content') || initialValue,
+    'placeholder': "Seems like there is nothing noted!",
+    'shortcuts': {
+      'drawImage': null,
+      'drawLink': null,
+      'togglePreview': 'Cmd-Alt-P'
+    },
     'status': false,
-    'toolbar': false,
     'spellChecker': false,
-    'initialValue': initialValue
+    'toolbar': false
   });
-  simplemde.codemirror.on("changes", function () {
-    localStorage.setItem("simplemde", simplemde.value());
+  simplemde.codemirror.on('changes', function () {
+    localStorage.setItem('content', simplemde.value());
+    changed = + new Date()
+    localStorage.setItem('changed', changed);
   });
-  simplemde.codemirror.on("renderLine", function (cm, line, element) {
+  simplemde.codemirror.on('renderLine', function (cm, line, element) {
     var styles = line.styles.toString()
     if (styles.search('formatting-task') >= 0) {
       $(element).addClass('task')
@@ -32,7 +53,14 @@
       }
     }
   });
-  simplemde.codemirror.on("mousedown", function (cm, event) {
+  simplemde.codemirror.on('focus', function (cm, event) {
+    console.log('blu')
+    if (localStorage.getItem('changed') >= changed) {
+      cm.setValue(localStorage.getItem('content'))
+      changed = localStorage.getItem('changed')
+    }
+  })
+  simplemde.codemirror.on('mousedown', function (cm, event) {
     if ($(event.target).siblings('.cm-formatting-task').length > 0 || $(event.target).hasClass('cm-formatting-task')) {
       var element = $(event.target).parent().children('.cm-formatting-task')[0]
       var line = cm.getLineHandle($(element).parents('.CodeMirror-line').index())
