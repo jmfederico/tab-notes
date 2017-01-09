@@ -22,13 +22,14 @@ pre.task.task-completed .cm-formatting-task {
     transition: max-height 1s;
 }
 
-#sync-status {
+#icons-wrapper {
     position: fixed;
     right: 0;
     top: 0;
     z-index: 100;
 }
 
+#print-icon,
 #sync-icon {
     width: 3rem;
     height: 3rem;
@@ -69,4 +70,11 @@ pre.task.task-completed .cm-formatting-task {
 
 #sync-status.error::before {
     content: 'Error syncing';
+}
+
+@media print {
+    .no-print,
+    .no-print * {
+        display: none !important;
+    }
 }

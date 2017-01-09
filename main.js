@@ -51,8 +51,7 @@
     'placeholder': 'Seems like there is nothing noted!',
     'shortcuts': {
       'drawImage': null,
-      'drawLink': null,
-      'togglePreview': 'Cmd-Alt-P'
+      'drawLink': null
     },
     'status': false,
     'spellChecker': false,
@@ -140,6 +139,10 @@
     } else {
       $wrapper.css('max-height', '')
     }
+  })
+
+  $('#print-icon').click(function () {
+    simplemde.togglePreview()
   })
 
   function toggleSyncStatus () {
