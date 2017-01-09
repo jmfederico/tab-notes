@@ -159,7 +159,32 @@
       }
       // Sign in with email and pass.
       // [START authwithemail]
-      firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
+      firebase.auth().signInWithEmailAndPassword(email, password).then(function (user) {
+        database.ref('users/' + user.uid + '/note/content').once('value').then(function (snapshot) {
+          // Mix Local and Cloud notes.
+          var firebaseContent = snapshot.val()
+          var localContent = localStorage.getItem('content')
+          var content = `    ** ----------------------- **
+    ** Beginning of Local note **
+    ** ${new Date().toLocaleDateString()}
+    ** ----------------------- **
+
+${firebaseContent}
+
+-
+
+    ** ----------------------- **
+    ** Beginning of Cloud note **
+    ** ${new Date().toLocaleDateString()}
+    ** ----------------------- **
+
+${localContent}
+`
+          simplemde.codemirror.setValue(content)
+          window.alert('Both your local and you cloud notes are shown in your notepad, you can now review them and update as appropiate.')
+        })
+      },
+      function (error) {
         // Handle Errors here.
         var errorCode = error.code
         var errorMessage = error.message
@@ -273,7 +298,7 @@
         document.getElementById('quickstart-password-reset').disabled = true
         if (!emailVerified) {
           $('#sync-status').removeClass()
-          $('#sync-status').addClass('error')
+          $('#sync-status').addClass('warning')
           document.getElementById('quickstart-verify-email').disabled = false
         }
       // [END_EXCLUDE]
@@ -293,6 +318,19 @@
     // [END_EXCLUDE]
     })
     // [END authstatelistener]
+
+    var connectedRef = firebase.database().ref('.info/connected')
+    connectedRef.on('value', function (snap) {
+      var user = firebase.auth().currentUser
+      if (user && user.emailVerified) {
+        $('#sync-status').removeClass()
+        if (snap.val() === true) {
+          $('#sync-status').addClass('syncing')
+        } else {
+          $('#sync-status').addClass('error')
+        }
+      }
+    })
 
     document.getElementById('quickstart-sign-in').addEventListener('click', toggleSignIn, false)
     document.getElementById('quickstart-sign-up').addEventListener('click', handleSignUp, false)
