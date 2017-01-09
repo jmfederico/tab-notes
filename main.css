@@ -12,3 +12,45 @@ pre.task.task-completed .cm-formatting-task {
     color: green;
     text-decoration: line-through;
 }
+
+#firebase-auth-wrapper {
+    max-height: 0;
+    transition: max-height 1s;
+}
+
+#sync-status {
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 100;
+}
+
+#sync-icon {
+    width: 3rem;
+    height: 3rem;
+}
+
+#sync-icon-fill {
+    fill: grey;
+}
+
+#sync-status::before {
+    content: 'Not syncing';
+    vertical-align: 1rem;
+}
+
+.syncing #sync-icon-fill {
+    fill: green;
+}
+
+#sync-status.syncing::before {
+    content: 'Syncing';
+}
+
+.error #sync-icon-fill {
+    fill: red;
+}
+
+#sync-status.error::before {
+    content: 'Error syncing';
+}

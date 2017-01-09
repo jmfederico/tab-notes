@@ -125,6 +125,20 @@
   })
 
   /**
+   * Sync status
+   */
+  $('#sync-status').click(function () {
+    var $wrapper = $('#firebase-auth-wrapper')
+    var $child = $('#firebase-auth')
+    $wrapper.toggleClass('open')
+    if ($wrapper.hasClass('open')) {
+      $wrapper.css('max-height', $child.height() + 'px')
+    } else {
+      $wrapper.css('max-height', '')
+    }
+  })
+
+  /**
    * Handles the sign in button press.
    */
   function toggleSignIn () {
@@ -247,6 +261,8 @@
       document.getElementById('quickstart-verify-email').disabled = true
       // [END_EXCLUDE]
       if (user) {
+        $('#sync-status').removeClass()
+        $('#sync-status').addClass('syncing')
         // User is signed in.
         var emailVerified = user.emailVerified
         // [START_EXCLUDE silent]
@@ -256,10 +272,13 @@
         document.getElementById('quickstart-sign-up').disabled = true
         document.getElementById('quickstart-password-reset').disabled = true
         if (!emailVerified) {
+          $('#sync-status').removeClass()
+          $('#sync-status').addClass('error')
           document.getElementById('quickstart-verify-email').disabled = false
         }
       // [END_EXCLUDE]
       } else {
+        $('#sync-status').removeClass()
         // User is signed out.
         // [START_EXCLUDE silent]
         document.getElementById('quickstart-sign-in').textContent = 'Sign in'
