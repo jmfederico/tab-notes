@@ -16,6 +16,7 @@
 
   var changed = -1
   var syncSource = null
+  var firebaseConnected = false
 
   function getInitialValue () {
     var initialValue = `# Welcome to Tab-Notes
@@ -68,10 +69,13 @@
 
     if (syncSource !== 'firebase' && user) {
       clearTimeout(saveToFirebaseTimerId)
+      $('#sync-status').addClass('writing')
       saveToFirebaseTimerId = setTimeout(function () {
         database.ref('users/' + user.uid + '/note').set({
           'content': content,
           'changed': changed
+        }).then(function () {
+          $('#sync-status').removeClass('writing')
         })
       }, 2000)
     }
@@ -138,6 +142,20 @@
     }
   })
 
+  function toggleSyncStatus () {
+    $('#sync-status').removeClass()
+    var user = firebase.auth().currentUser
+    if (user) {
+      if (!user.emailVerified) {
+        $('#sync-status').addClass('warning')
+      } else if (firebaseConnected) {
+        $('#sync-status').addClass('syncing')
+      } else {
+        $('#sync-status').addClass('error')
+      }
+    }
+  }
+
   /**
    * Handles the sign in button press.
    */
@@ -183,8 +201,7 @@ ${localContent}
           simplemde.codemirror.setValue(content)
           window.alert('Both your local and you cloud notes are shown in your notepad, you can now review them and update as appropiate.')
         })
-      },
-      function (error) {
+      }).catch(function (error) {
         // Handle Errors here.
         var errorCode = error.code
         var errorMessage = error.message
@@ -219,7 +236,11 @@ ${localContent}
     }
     // Sign in with email and pass.
     // [START createwithemail]
-    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function (error) {
+    firebase.auth().createUserWithEmailAndPassword(email, password).then(function (user) {
+      if (!user.emailVerified) {
+        sendEmailVerification()
+      }
+    }).catch(function (error) {
       // Handle Errors here.
       var errorCode = error.code
       var errorMessage = error.message
@@ -286,8 +307,6 @@ ${localContent}
       document.getElementById('quickstart-verify-email').disabled = true
       // [END_EXCLUDE]
       if (user) {
-        $('#sync-status').removeClass()
-        $('#sync-status').addClass('syncing')
         // User is signed in.
         var emailVerified = user.emailVerified
         // [START_EXCLUDE silent]
@@ -297,13 +316,10 @@ ${localContent}
         document.getElementById('quickstart-sign-up').disabled = true
         document.getElementById('quickstart-password-reset').disabled = true
         if (!emailVerified) {
-          $('#sync-status').removeClass()
-          $('#sync-status').addClass('warning')
           document.getElementById('quickstart-verify-email').disabled = false
         }
       // [END_EXCLUDE]
       } else {
-        $('#sync-status').removeClass()
         // User is signed out.
         // [START_EXCLUDE silent]
         document.getElementById('quickstart-sign-in').textContent = 'Sign in'
@@ -316,20 +332,14 @@ ${localContent}
       // [START_EXCLUDE silent]
       document.getElementById('quickstart-sign-in').disabled = false
     // [END_EXCLUDE]
+      toggleSyncStatus()
     })
     // [END authstatelistener]
 
     var connectedRef = firebase.database().ref('.info/connected')
     connectedRef.on('value', function (snap) {
-      var user = firebase.auth().currentUser
-      if (user && user.emailVerified) {
-        $('#sync-status').removeClass()
-        if (snap.val() === true) {
-          $('#sync-status').addClass('syncing')
-        } else {
-          $('#sync-status').addClass('error')
-        }
-      }
+      firebaseConnected = snap.val()
+      toggleSyncStatus()
     })
 
     document.getElementById('quickstart-sign-in').addEventListener('click', toggleSignIn, false)

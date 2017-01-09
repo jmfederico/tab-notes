@@ -47,6 +47,10 @@ pre.task.task-completed .cm-formatting-task {
     fill: green;
 }
 
+.syncing.writing #sync-icon-fill {
+    fill: lightblue;
+}
+
 #sync-status.syncing::before {
     content: 'Syncing';
 }
