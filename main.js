@@ -132,13 +132,7 @@
    */
   $('#sync-status').click(function () {
     var $wrapper = $('#firebase-auth-wrapper')
-    var $child = $('#firebase-auth')
     $wrapper.toggleClass('open')
-    if ($wrapper.hasClass('open')) {
-      $wrapper.css('max-height', $child.height() + 'px')
-    } else {
-      $wrapper.css('max-height', '')
-    }
   })
 
   $('#print-icon').click(function () {
