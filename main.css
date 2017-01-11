@@ -3,12 +3,21 @@ html {
 }
 
 html,
+body {
+    overflow: hidden;
+}
+
+html,
 body,
 .CodeMirror-wrap,
 .editor-preview {
     min-height: 0;
     height: 100%;
     box-sizing: border-box;
+}
+
+.CodeMirror-scroll {
+    min-height: 0;
 }
 
 pre .cm-comment {
