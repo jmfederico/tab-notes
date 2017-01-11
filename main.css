@@ -104,7 +104,9 @@ pre.task.task-completed .cm-formatting-task {
     content: 'Error syncing';
 }
 
-.CodeMirror .CodeMirror-code .cm-formatting {
+.CodeMirror .CodeMirror-code .cm-formatting-em,
+.CodeMirror .CodeMirror-code .cm-formatting-strong,
+.CodeMirror .CodeMirror-code .cm-formatting-header {
     font-size: 0.5rem;
     vertical-align: super;
 }
