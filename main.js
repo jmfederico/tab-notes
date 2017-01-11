@@ -135,6 +135,16 @@
     $wrapper.toggleClass('open')
   })
 
+  window.SimpleMDE.prototype.togglePreviewOld = window.SimpleMDE.prototype.togglePreview
+
+  window.SimpleMDE.prototype.togglePreview = function () {
+    var cm = this.codemirror
+    var wrapper = cm.getWrapperElement()
+    var preview = wrapper.lastChild
+    $('body').toggleClass('tab-notes-editor-preview-active', !/editor-preview-active/.test(preview.className))
+    this.togglePreviewOld()
+  }
+
   $('#print-icon').click(function () {
     simplemde.togglePreview()
   })
