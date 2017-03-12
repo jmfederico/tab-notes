@@ -184,7 +184,12 @@
           // Mix Local and Cloud notes.
           var firebaseContent = snapshot.val()
           var localContent = localStorage.getItem('content')
-          var content =
+
+          document.getElementById('email').value = ''
+          document.getElementById('password').value = ''
+
+          if (firebaseContent !== localContent) {
+            var content =
             '    ** ----------------------- **\n' +
             '    ** Beginning of Local note **\n' +
             '    ** ' + new Date().toLocaleDateString() + '\n' +
@@ -197,8 +202,10 @@
             '    ** ----------------------- **\n\n' +
             localContent + '\n'
 
-          simplemde.codemirror.setValue(content)
-          window.alert('Both your local and you cloud notes are shown in your notepad, you can now review them and update as appropiate.')
+            simplemde.codemirror.setValue(content)
+            window.alert('Both your local and you cloud notes are shown in your notepad, you can now review them and update as appropiate.')
+          }
+          $('#sync-status').click()
         })
       }).catch(function (error) {
         // Handle Errors here.
