@@ -52,27 +52,79 @@
     'spellChecker': false,
     'toolbar': false
   })
-  var saveToFirebaseTimerId
+
+  var deleteOldRevisions = function () {
+    // Loop through every revision in order to clear space
+    var limit = 1024 * 1024 * 1 // 1024 * 1024 = 1 MB
+    var remSpace = limit - unescape(encodeURIComponent(JSON.stringify(localStorage))).length
+
+    if (remSpace < 0) {
+      var i
+      var key
+      var revision
+      var revisions = []
+      // Get Revisions in array
+      for (i = 0; i < localStorage.length; i++) {
+        key = localStorage.key(i)
+        if (key && key.substring(0, 3) === 'rev') {
+          revisions[i] = key
+        }
+      }
+      revisions = revisions.sort()
+      for (i = 0; i < revisions.length; i++) {
+        key = revisions[i]
+        revision = localStorage.getItem(key)
+        remSpace += unescape(encodeURIComponent(JSON.stringify({key: revision}))).length
+        localStorage.removeItem(key)
+        if (remSpace > 0) break
+      }
+    }
+  }
+
+  var saveNewLocalRevision = function (content, date, timeout) {
+    timeout = timeout || 500
+
+    clearTimeout(saveNewLocalRevision.timerId)
+
+    saveNewLocalRevision.TimerId = setTimeout(function () {
+      localStorage.setItem('rev-' + date, content)
+      deleteOldRevisions()
+    }, timeout)
+  }
+
+  var saveToFirebase = function (content, date, timeout) {
+    timeout = timeout || 2000
+
+    clearTimeout(saveToFirebase.timerId)
+
+    var user = firebase.auth().currentUser
+    if (!user) return
+
+    $('#sync-status').addClass('writing')
+
+    saveToFirebase.timerId = setTimeout(function () {
+      database.ref('users/' + user.uid + '/note').set({
+        'content': content,
+        'changed': changed
+      }).then(function () {
+        $('#sync-status').removeClass('writing')
+      })
+    }, timeout)
+  }
+
   simplemde.codemirror.on('changes', function () {
     var content = simplemde.value()
-    var user = firebase.auth().currentUser
 
     if (!syncSource) {
       changed = +new Date()
     }
 
-    if (syncSource !== 'firebase' && user) {
-      clearTimeout(saveToFirebaseTimerId)
-      $('#sync-status').addClass('writing')
-      saveToFirebaseTimerId = setTimeout(function () {
-        database.ref('users/' + user.uid + '/note').set({
-          'content': content,
-          'changed': changed
-        }).then(function () {
-          $('#sync-status').removeClass('writing')
-        })
-      }, 2000)
+    if (syncSource !== 'firebase') {
+      saveToFirebase(content, changed)
     }
+
+    saveNewLocalRevision(content, changed)
+
     localStorage.setItem('content', content)
     localStorage.setItem('changed', changed)
     syncSource = null
