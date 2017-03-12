@@ -19,22 +19,17 @@
   var firebaseConnected = false
 
   function getInitialValue () {
-    var initialValue = `# Welcome to Tab-Notes
-
-  Trained to understand Markdown, Tab-Notes will keep your:
-
-  - thoughts
-  - to-dos
-  - memos
-
-  __Always ready for you!__
-
-  Based on http://simplemde.com/, with my personal set of improvements, it will help you be more organized.
-
-  - [x] Read introduction
-  - [ ] Click on a to-do to mark is as done
-  - [ ] Be more productive
-    `
+    var initialValue =
+      '# Welcome to Tab-Notes\n\n' +
+      '  Trained to understand Markdown, Tab-Notes will keep your:\n\n' +
+      '  - thoughts\n' +
+      '  - to-dos\n' +
+      '  - memos\n\n' +
+      '  __Always ready for you!__\n\n' +
+      '  Based on http://simplemde.com/, with my personal set of improvements, it will help you be more organized.\n\n' +
+      '  - [x] Read introduction\n' +
+      '  - [ ] Click on a to-do to mark is as done\n' +
+      '  - [ ] Be more productive\n'
 
     var localContent = localStorage.getItem('content')
     var localChanged = localStorage.getItem('changed')
@@ -189,22 +184,19 @@
           // Mix Local and Cloud notes.
           var firebaseContent = snapshot.val()
           var localContent = localStorage.getItem('content')
-          var content = `    ** ----------------------- **
-    ** Beginning of Local note **
-    ** ${new Date().toLocaleDateString()}
-    ** ----------------------- **
+          var content =
+            '    ** ----------------------- **\n' +
+            '    ** Beginning of Local note **\n' +
+            '    ** ' + new Date().toLocaleDateString() + '\n' +
+            '    ** ----------------------- **\n\n' +
+            firebaseContent + '\n\n' +
+            '-\n\n' +
+            '    ** ----------------------- **\n' +
+            '    ** Beginning of Cloud note **\n' +
+            '    ** ' + new Date().toLocaleDateString() + '\n' +
+            '    ** ----------------------- **\n\n' +
+            localContent + '\n'
 
-${firebaseContent}
-
--
-
-    ** ----------------------- **
-    ** Beginning of Cloud note **
-    ** ${new Date().toLocaleDateString()}
-    ** ----------------------- **
-
-${localContent}
-`
           simplemde.codemirror.setValue(content)
           window.alert('Both your local and you cloud notes are shown in your notepad, you can now review them and update as appropiate.')
         })
