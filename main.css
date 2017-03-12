@@ -2,6 +2,10 @@ html {
   font-family: sans-serif;
 }
 
+/**
+ * Preview should not be contrained to the editor size.
+ * Disallow inner scroll and remove size restrictions
+ */
 .tab-notes-editor-preview-active .CodeMirror-scroll {
   display: none;
 }
