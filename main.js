@@ -82,11 +82,11 @@
   }
 
   var saveNewLocalRevision = function (content, date, timeout) {
-    timeout = timeout || 500
+    timeout = timeout || 5000
 
     clearTimeout(saveNewLocalRevision.timerId)
 
-    saveNewLocalRevision.TimerId = setTimeout(function () {
+    saveNewLocalRevision.timerId = setTimeout(function () {
       localStorage.setItem('rev-' + date, content)
       deleteOldRevisions()
     }, timeout)
