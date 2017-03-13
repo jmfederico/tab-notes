@@ -234,7 +234,6 @@
           var firebaseContent = snapshot.val()
           var localContent = localStorage.getItem('content')
 
-          document.getElementById('email').value = ''
           document.getElementById('password').value = ''
 
           if (firebaseContent !== localContent) {
@@ -345,6 +344,7 @@
         var emailVerified = user.emailVerified
         document.getElementById('quickstart-sign-in').textContent = 'Sign out'
         document.getElementById('email').disabled = true
+        document.getElementById('email').value = user.email
         document.getElementById('password').disabled = true
         document.getElementById('quickstart-sign-up').disabled = true
         document.getElementById('quickstart-password-reset').disabled = true
@@ -355,6 +355,7 @@
         // User is signed out.
         document.getElementById('quickstart-sign-in').textContent = 'Sign in'
         document.getElementById('email').disabled = false
+        document.getElementById('email').value = ''
         document.getElementById('password').disabled = false
         document.getElementById('quickstart-sign-up').disabled = false
         document.getElementById('quickstart-password-reset').disabled = false
@@ -368,6 +369,15 @@
       firebaseConnected = snap.val()
       toggleSyncStatus()
     })
+
+    var submitOnEnter = function (e) {
+      if (e.keyCode === 13) { // Checks whether the pressed key is "Enter"
+        toggleSignIn()
+      }
+    }
+
+    document.getElementById('email').addEventListener('keydown', submitOnEnter, false)
+    document.getElementById('password').addEventListener('keydown', submitOnEnter, false)
 
     document.getElementById('quickstart-sign-in').addEventListener('click', toggleSignIn, false)
     document.getElementById('quickstart-sign-up').addEventListener('click', handleSignUp, false)
