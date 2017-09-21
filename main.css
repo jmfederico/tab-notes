@@ -116,3 +116,35 @@ pre.task.task-completed .cm-formatting-task {
     display: none !important;
   }
 }
+
+@media only screen and (max-device-width: 414px) {
+  .CodeMirror .CodeMirror-code .cm-header-1 {
+    font-size: 150%;
+    line-height: 150%
+  }
+
+  .CodeMirror .CodeMirror-code .cm-header-2 {
+    font-size: 130%;
+    line-height: 130%
+  }
+
+  .CodeMirror .CodeMirror-code .cm-header-3 {
+    font-size: 112%;
+    line-height: 112%
+  }
+
+  .CodeMirror .CodeMirror-code .cm-header-4 {
+    font-size: 105%;
+    line-height: 105%
+  }
+
+  #sync-status::before {
+    display: none
+  }
+
+  #print-icon,
+  #sync-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+}
